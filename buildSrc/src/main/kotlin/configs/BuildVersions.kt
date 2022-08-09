@@ -20,6 +20,6 @@ object BuildVersions {
 
     val buildVersionCode: Int get() = buildShortFormatDate.toInt()
 
-    val buildVersionName: String get() = "5.0.0"
+    val buildVersionName: String get() = "1.0"
 
 }

@@ -30,7 +30,7 @@ android {
         }
 
         debug {
-            applicationIdSuffix = ".debug"
+            //applicationIdSuffix = ".debug"
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
