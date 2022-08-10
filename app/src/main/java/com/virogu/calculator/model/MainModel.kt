@@ -97,7 +97,7 @@ class MainModel : ViewModel() {
     private val keyboardListLarge = listOf(
         //Line1
         NumberKey(Seven), NumberKey(Eight), NumberKey(Nine),
-        ClearKey(), ReduceKey(), SpecialKey(LeftBrackets), SpecialKey(RightBrackets),
+        SpecialKey(LeftBrackets), SpecialKey(RightBrackets), ClearKey(), ReduceKey(),
         //Line2
         NumberKey(Four), NumberKey(Five), NumberKey(Six),
         OptionKey(Divide), OptionKey(Multiply), OptionKey(Plus), OptionKey(Reduce),
