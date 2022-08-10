@@ -1,6 +1,7 @@
 package com.virogu.calculator.tool
 
 import android.util.Log
+import com.mpobjects.bdparsii.eval.Parser
 import com.virogu.calculator.bean.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,7 @@ class CalculatorTool {
         private const val TAG = "CalculatorTool"
     }
 
-    private val calculateList: MutableList<CalculatorEntity> = mutableListOf(Zero)
+    private val calculateList: MutableList<CalculatorEntity> = mutableListOf()
 
     private val mCalculatorString: MutableStateFlow<String> = MutableStateFlow("0")
     val calculatorStringFlow: StateFlow<String> = mCalculatorString
@@ -56,21 +57,17 @@ class CalculatorTool {
                 calculateList.removeLast()
             }
         }
-        val s = refreshCalculatorString().replace("×", "*").replace("÷", "/")
-        try {
-            //val builder = ExpressionBuilder(s).build()
-            //if (auto && !builder.validate().isValid) {
-            //    return
-            //}
+        val s = refreshCalculatorString().formatExpression()
+        return try {
             Log.d(TAG, "calculator: $s")
-            val r = Calculator.conversion(s).formatLong()
+            val r = Parser.parse(s).evaluate().toString()
             Log.d(TAG, "calculator: $s = $r")
             mResult.tryEmit(r)
-            return Result.success(r)
+            Result.success(r)
         } catch (e: Throwable) {
             Log.w(TAG, e)
             mResult.tryEmit("计算出错")
-            return Result.failure(e)
+            Result.failure(e)
         } finally {
             if (!auto) {
                 calculateList.clear()
@@ -150,7 +147,7 @@ class CalculatorTool {
             is CalculatorOptionEntity -> {
                 if (calculateList.isEmpty()) {
                     try {
-                        val lastResult = mResult.value.toDouble().formatLong()
+                        val lastResult = mResult.value.toBigDecimal().toString()
                         calculateList.add(UnionNumber(lastResult))
                     } catch (e: Throwable) {
                         calculateList.clear()
@@ -203,6 +200,12 @@ class CalculatorTool {
         return true
     }
 
+    private fun String.formatExpression(): String {
+        return this.replace("×", "*")
+            .replace("÷", "/")
+    }
+
+    @Suppress("unused")
     private fun Double.formatLong(): String {
         return if (this - floor(this) < 1e-10) {
             this.toString().removeSuffix(".0")
@@ -210,4 +213,5 @@ class CalculatorTool {
             this.toString()
         }
     }
+
 }

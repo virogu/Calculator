@@ -2,9 +2,9 @@ import Versions.composeVersion
 import configs.BuildVersions
 
 object Versions {
-    const val compileSdk = 32
+    const val compileSdk = 33
     const val minSdk = 21
-    const val targetSdkVersion = 32
+    const val targetSdkVersion = 33
     const val composeVersion: String = "1.2.0-rc02"
     const val kotlinVersion: String = "1.6.21"
 

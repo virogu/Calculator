@@ -1,3 +1,7 @@
+import Libs.Coroutines.android
+import Versions.compileSdk
+import Versions.minSdk
+
 plugins {
     commons.application
 }
@@ -67,7 +71,12 @@ dependencies {
     application()
     composeCore()
     lifecycle()
+
     // https://mvnrepository.com/artifact/net.objecthunter/exp4j
-    implementation("net.objecthunter:exp4j:0.4.8")
+    // ExpressionBuilder
+    //implementation("net.objecthunter:exp4j:0.4.8")
+
+    // https://mvnrepository.com/artifact/com.mpobjects/bdparsii
+    implementation("com.mpobjects:bdparsii:1.0.0")
     test()
 }
