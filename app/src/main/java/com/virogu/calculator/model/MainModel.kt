@@ -37,7 +37,7 @@ class MainModel : ViewModel() {
     }
 
     fun calculate() {
-        calculatorTool.calculator(false).getOrNull()?.also {
+        calculatorTool.calculate(false).getOrNull()?.also {
             mResultChanged.tryEmit(1 - mResultChanged.value)
         }
     }

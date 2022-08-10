@@ -24,7 +24,12 @@ class CalculatorTool {
     fun add(new: CalculatorEntity): Result<Any> {
         val r = dealOption(new)
         if (r.isSuccess) {
-            calculator()
+            //measureTimeMillis {
+            //    calculate()
+            //}.also {
+            //    Log.v(TAG, "calculate spend $it ms")
+            //}
+            calculate()
         }
         return r
     }
@@ -33,7 +38,7 @@ class CalculatorTool {
         val r = delIml()
         if (r.isSuccess) {
             if (calculateList.isNotEmpty()) {
-                calculator()
+                calculate()
             }
         }
         return r
@@ -45,7 +50,7 @@ class CalculatorTool {
         mResult.tryEmit("")
     }
 
-    fun calculator(auto: Boolean = true): Result<String> {
+    fun calculate(auto: Boolean = true): Result<String> {
         if (calculateList.isEmpty()) {
             return Result.failure(IllegalStateException("None need calculate"))
         }
@@ -60,7 +65,7 @@ class CalculatorTool {
         val s = refreshCalculatorString().formatExpression()
         return try {
             Log.d(TAG, "calculator: $s")
-            val r = Parser.parse(s).evaluate().toString()
+            val r = Parser.parse(s).evaluate().toDouble().formatLong()
             Log.d(TAG, "calculator: $s = $r")
             mResult.tryEmit(r)
             Result.success(r)
@@ -147,7 +152,7 @@ class CalculatorTool {
             is CalculatorOptionEntity -> {
                 if (calculateList.isEmpty()) {
                     try {
-                        val lastResult = mResult.value.toBigDecimal().toString()
+                        val lastResult = mResult.value.toDouble().formatLong()
                         calculateList.add(UnionNumber(lastResult))
                     } catch (e: Throwable) {
                         calculateList.clear()
@@ -203,6 +208,9 @@ class CalculatorTool {
     private fun String.formatExpression(): String {
         return this.replace("×", "*")
             .replace("÷", "/")
+            .replace("E+", "*10^", true)
+            .replace("E-", "/10^", true)
+            .replace("E", "*10^", true)
     }
 
     @Suppress("unused")
