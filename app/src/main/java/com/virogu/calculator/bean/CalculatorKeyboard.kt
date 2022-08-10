@@ -6,29 +6,34 @@ package com.virogu.calculator.bean
  **/
 
 sealed class Keyboard(
-    open val cells: Int = 1
+    open val desc: String,
+    open val cells: Int = 1,
 )
 
 sealed class FunctionKey(
+    override val desc: String,
     override val cells: Int = 1
-) : Keyboard(cells)
+) : Keyboard(desc, cells)
 
 class ClearKey(
+    override val desc: String = "AC",
     override val cells: Int = 1
-) : FunctionKey(cells)
+) : FunctionKey(desc, cells)
 
 class ReduceKey(
+    override val desc: String = "←",
     override val cells: Int = 1
-) : FunctionKey(cells)
+) : FunctionKey(desc, cells)
 
 class ResultKey(
+    override val desc: String = "=",
     override val cells: Int = 1
-) : FunctionKey(cells)
+) : FunctionKey(desc, cells)
 
 sealed class CalculatorKey(
     open val value: CalculatorEntity,
     override val cells: Int = 1
-) : Keyboard(cells)
+) : Keyboard(value.value, cells)
 
 data class OptionKey(
     override val value: CalculatorOptionEntity,

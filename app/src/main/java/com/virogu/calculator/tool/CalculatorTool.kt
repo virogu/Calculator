@@ -31,7 +31,9 @@ class CalculatorTool {
     fun del(): Result<Any> {
         val r = delIml()
         if (r.isSuccess) {
-            calculator()
+            if (calculateList.isNotEmpty()) {
+                calculator()
+            }
         }
         return r
     }
@@ -42,30 +44,33 @@ class CalculatorTool {
         mResult.tryEmit("")
     }
 
-    fun calculator(auto: Boolean = true) {
+    fun calculator(auto: Boolean = true): Result<String> {
         if (calculateList.isEmpty()) {
-            return
+            return Result.failure(IllegalStateException("None need calculate"))
         }
         if (calculateList.last() is CalculatorOptionEntity) {
             if (auto) {
                 refreshCalculatorString()
-                return
+                return Result.failure(IllegalArgumentException("last is operator"))
             } else {
                 calculateList.removeLast()
             }
         }
-        val s = refreshCalculatorString()
+        val s = refreshCalculatorString().replace("×", "*").replace("÷", "/")
         try {
             //val builder = ExpressionBuilder(s).build()
             //if (auto && !builder.validate().isValid) {
             //    return
             //}
+            Log.d(TAG, "calculator: $s")
             val r = Calculator.conversion(s).formatLong()
             Log.d(TAG, "calculator: $s = $r")
             mResult.tryEmit(r)
+            return Result.success(r)
         } catch (e: Throwable) {
-            Log.w(TAG, "e: ${e.localizedMessage}")
+            Log.w(TAG, e)
             mResult.tryEmit("计算出错")
+            return Result.failure(e)
         } finally {
             if (!auto) {
                 calculateList.clear()
@@ -77,7 +82,7 @@ class CalculatorTool {
         val s = calculateList.joinToString(separator = "") {
             it.value
         }
-        mCalculatorString.tryEmit(s.replace("*", "×").replace("/", "÷"))
+        mCalculatorString.tryEmit(s)
         return s
     }
 
@@ -99,6 +104,9 @@ class CalculatorTool {
                 is CalculatorSpecialEntity -> {
                     calculateList.removeLast()
                 }
+            }
+            if (calculateList.isEmpty()) {
+                clear()
             }
             Result.success(0)
         } else {

@@ -21,7 +21,7 @@ import com.virogu.calculator.model.MainModel
 import com.virogu.calculator.ui.theme.OptionKeyboardColor
 import com.virogu.calculator.ui.theme.buttonBackgroundColor
 import com.virogu.calculator.ui.theme.buttonContentColor
-import com.virogu.calculator.view.isWideScreen
+import com.virogu.calculator.view.rememberWindowInfo
 
 /**
  * Created by Virogu
@@ -30,18 +30,21 @@ import com.virogu.calculator.view.isWideScreen
 
 @Composable
 fun Calculator(model: MainModel) {
-    val isWidthScreen = isWideScreen()
-    if (isWidthScreen) {
-        KeyboardViewHorizontal(model)
-    } else {
-        KeyboardViewVertical(model)
-    }
+    val windowInfo = rememberWindowInfo()
+    //val isWidthScreen = isWideScreen()
+    //if (false) {
+    //    KeyboardViewHorizontal(model, model.keyboardListHorizontal)
+    //} else {
+    //    KeyboardViewVertical(model, model.keyboardListVertical)
+    //}
+    KeyboardViewVertical(model, model.getKeyBoardList(windowInfo))
 }
 
-//横屏
 @Composable
-fun KeyboardViewHorizontal(model: MainModel) {
+fun KeyboardViewHorizontal(model: MainModel, keyboardList: Pair<Int, List<Keyboard>>) {
     val state = rememberLazyGridState()
+    val cells = keyboardList.first
+    val list = keyboardList.second
     Row(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
@@ -70,40 +73,41 @@ fun KeyboardViewHorizontal(model: MainModel) {
                     .fillMaxWidth()
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.Center,
-                columns = GridCells.Fixed(model.keyboardListHorizontal.first),
+                columns = GridCells.Fixed(cells),
                 state = state,
                 contentPadding = PaddingValues(16.dp, 16.dp)
             ) {
-                KeyboardView(list = model.keyboardListHorizontal.second, model = model)
+                KeyboardView(list = list, model = model)
             }
         }
     }
 }
 
-//竖屏
 @Composable
-fun KeyboardViewVertical(model: MainModel) {
+fun KeyboardViewVertical(model: MainModel, keyboardList: Pair<Int, List<Keyboard>>) {
     val state = rememberLazyGridState()
+    val cells = keyboardList.first
+    val list = keyboardList.second
     Box(modifier = Modifier.fillMaxSize()) {
         LazyVerticalGrid(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            columns = GridCells.Fixed(model.keyboardListVertical.first),
+            modifier = Modifier.fillMaxSize(),
+            reverseLayout = false,
+            verticalArrangement = Arrangement.Bottom,
+            horizontalArrangement = Arrangement.Start,
+            columns = GridCells.Fixed(cells),
             state = state,
-            contentPadding = PaddingValues(16.dp, 24.dp)
+            contentPadding = PaddingValues(16.dp)
         ) {
-            item(span = { GridItemSpan(4) }) {
+            item(span = { GridItemSpan(cells) }) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp, 8.dp)
                 ) {
                     OutputView(model = model, modifier = Modifier.align(Alignment.End))
                 }
             }
-            KeyboardView(list = model.keyboardListVertical.second, model = model)
+            KeyboardView(list = list, model = model)
         }
     }
 }
@@ -124,23 +128,23 @@ fun OutputView(
     val font2 = remember {
         mutableStateOf(Pair(26.sp, buttonContentColor(isDark).copy(alpha = 0.8f)))
     }
+    LaunchedEffect(tag.value) {
+        if (font1.value.first > font2.value.first) {
+            font1.value = Pair(24.sp, buttonContentColor(isDark).copy(alpha = 0.8f))
+            font2.value = Pair(40.sp, buttonContentColor(isDark))
+        }
+    }
     LaunchedEffect(calculatorString.value) {
         if (font1.value.first < font2.value.first) {
             font1.value = Pair(32.sp, buttonContentColor(isDark))
             font2.value = Pair(26.sp, buttonContentColor(isDark).copy(alpha = 0.8f))
         }
     }
-    LaunchedEffect(tag.value) {
-        if (font1.value.first > font2.value.first && tag.value != 0) {
-            font1.value = Pair(24.sp, buttonContentColor(isDark).copy(alpha = 0.8f))
-            font2.value = Pair(40.sp, buttonContentColor(isDark))
-        }
-    }
     AnimatedContent(
         targetState = font1.value.first,
         modifier = modifier,
         transitionSpec = {
-            scaleIn(initialScale = 0.9f) with scaleOut(targetScale = 1.0f)
+            scaleIn(initialScale = 0.5f) with scaleOut(targetScale = 1.0f)
         }
     ) {
         Text(
@@ -156,7 +160,7 @@ fun OutputView(
             targetState = font2.value.first,
             modifier = modifier,
             transitionSpec = {
-                scaleIn(initialScale = 0.9f) with scaleOut(targetScale = 1.0f)
+                scaleIn(initialScale = 0.5f) with scaleOut(targetScale = 1.0f)
             }
         ) {
             Text(
@@ -189,7 +193,7 @@ fun KeyboardButton(modifier: Modifier, keyboard: Keyboard, model: MainModel) {
         is ClearKey -> {
             KeyboardButton(
                 modifier = modifier,
-                text = "AC",
+                text = keyboard.desc,
                 contentColor = OptionKeyboardColor,
             ) {
                 model.clear()
@@ -198,7 +202,7 @@ fun KeyboardButton(modifier: Modifier, keyboard: Keyboard, model: MainModel) {
         is ReduceKey -> {
             KeyboardButton(
                 modifier = modifier,
-                text = "←",
+                text = keyboard.desc,
                 contentColor = OptionKeyboardColor
             ) {
                 model.del()
@@ -207,7 +211,7 @@ fun KeyboardButton(modifier: Modifier, keyboard: Keyboard, model: MainModel) {
         is ResultKey -> {
             KeyboardButton(
                 modifier = modifier,
-                text = "=",
+                text = keyboard.desc,
                 fontSize = 30.sp,
                 backgroundColor = OptionKeyboardColor,
                 contentColor = Color.White
@@ -218,7 +222,7 @@ fun KeyboardButton(modifier: Modifier, keyboard: Keyboard, model: MainModel) {
         is SpecialKey -> {
             KeyboardButton(
                 modifier = modifier,
-                text = keyboard.value.value,
+                text = keyboard.desc,
                 fontSize = 26.sp,
                 contentColor = OptionKeyboardColor
             ) {
@@ -228,15 +232,15 @@ fun KeyboardButton(modifier: Modifier, keyboard: Keyboard, model: MainModel) {
         is OptionKey -> {
             KeyboardButton(
                 modifier = modifier,
-                text = keyboard.value.value,
-                fontSize = 26.sp,
+                text = keyboard.desc,
+                fontSize = 30.sp,
                 contentColor = OptionKeyboardColor
             ) {
                 model.plus(keyboard.value)
             }
         }
         is NumberKey -> {
-            KeyboardButton(modifier = modifier, text = keyboard.value.value) {
+            KeyboardButton(modifier = modifier, text = keyboard.desc) {
                 model.plus(keyboard.value)
             }
         }
