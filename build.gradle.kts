@@ -8,7 +8,7 @@ buildscript {
         maven("https://maven.aliyun.com/repository/google")
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.android.tools.build:gradle:7.2.2")
         classpath(kotlin("gradle-plugin", Versions.kotlinVersion))
         classpath(kotlin("serialization", Versions.kotlinVersion))
         // NOTE: Do not place your application dependencies here; they belong

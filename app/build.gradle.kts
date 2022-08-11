@@ -1,7 +1,3 @@
-import Libs.Coroutines.android
-import Versions.compileSdk
-import Versions.minSdk
-
 plugins {
     commons.application
 }

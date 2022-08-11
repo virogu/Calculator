@@ -66,28 +66,28 @@ class MainModel : ViewModel() {
     }
 
     private val keyboardListNormal = listOf(
-        //Line1
+        //row1
         ClearKey(), SpecialKey(LeftBrackets), SpecialKey(RightBrackets), OptionKey(Divide),
-        //Line2
+        //row2
         NumberKey(Seven), NumberKey(Eight), NumberKey(Nine), OptionKey(Multiply),
-        //Line3
+        //row3
         NumberKey(Four), NumberKey(Five), NumberKey(Six), OptionKey(Reduce),
-        //Line4
+        //row4
         NumberKey(One), NumberKey(Two), NumberKey(Three), OptionKey(Plus),
-        //Line5
+        //row5
         NumberKey(DotNumber), NumberKey(Zero), ReduceKey(), ResultKey(),
     ).let {
         Pair(4, it)
     }
 
     private val keyboardListMedium = listOf(
-        //Line1
+        //row1
         NumberKey(Seven), NumberKey(Eight), NumberKey(Nine), ClearKey(), ReduceKey(),
-        //Line2
+        //row2
         NumberKey(Four), NumberKey(Five), NumberKey(Six), OptionKey(Divide), OptionKey(Multiply),
-        //Line3
+        //row3
         NumberKey(One), NumberKey(Two), NumberKey(Three), OptionKey(Plus), OptionKey(Reduce),
-        //Line4
+        //row4
         NumberKey(Zero), NumberKey(DotNumber),
         SpecialKey(LeftBrackets), SpecialKey(RightBrackets), ResultKey(),
     ).let {
@@ -95,13 +95,13 @@ class MainModel : ViewModel() {
     }
 
     private val keyboardListLarge = listOf(
-        //Line1
+        //row1
         NumberKey(Seven), NumberKey(Eight), NumberKey(Nine),
         SpecialKey(LeftBrackets), SpecialKey(RightBrackets), ClearKey(), ReduceKey(),
-        //Line2
+        //row2
         NumberKey(Four), NumberKey(Five), NumberKey(Six),
         OptionKey(Divide), OptionKey(Multiply), OptionKey(Plus), OptionKey(Reduce),
-        //Line3
+        //row3
         NumberKey(One), NumberKey(Two), NumberKey(Three),
         NumberKey(Zero), NumberKey(DotNumber), ResultKey(cells = 2),
     ).let {
@@ -109,11 +109,11 @@ class MainModel : ViewModel() {
     }
 
     private val keyboardListMax = listOf(
-        //Line1
+        //row1
         NumberKey(Six), NumberKey(Seven), NumberKey(Eight), NumberKey(Nine), NumberKey(Zero),
         NumberKey(DotNumber), SpecialKey(LeftBrackets), SpecialKey(RightBrackets),
         ClearKey(), ReduceKey(),
-        //Line2
+        //row2
         NumberKey(One), NumberKey(Two), NumberKey(Three), NumberKey(Four), NumberKey(Five),
         OptionKey(Divide), OptionKey(Multiply), OptionKey(Plus), OptionKey(Reduce), ResultKey(),
     ).let {
